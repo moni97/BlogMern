@@ -1,23 +1,42 @@
-import './singlePost.css'
+import { useEffect, useState } from 'react'
+import { useLocation, Link } from 'react-router-dom'
+import axios from "axios";
+import './singlePost.css';
 
 export default function SinglePost() {
+  const location = useLocation()
+  const path = location.pathname.split("/")[2]
+  const [post, setPost] = useState({})
+  useEffect(() => {
+    const getPost = async() => {
+      const res = await axios.get('/posts/' + path)
+      setPost(res.data)
+    }
+    getPost()
+  }, [path])
   return (
     <div className='singlePost'>
       <div className="singlePostWrapper">
-        <img src="https://images.pexels.com/photos/2444429/pexels-photo-2444429.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="" className="singlePostImg" />
+        {post.photo && 
+        <img src={post.photo} alt="" className="singlePostImg" />
+        }
         <h1 className="singlePostTitle">
-            Lorem ipsum dolor sit
+            {post.title}
             <div className="singlePostEdit">
                 <i class="singlePostIcon fa-regular fa-pen-to-square"></i>
                 <i class="singlePostIcon fa-solid fa-trash"></i>
             </div>
         </h1>
         <div className="singlePostInfo">
-            <span className='singlePostAuthor'>Author: <b>Moni</b></span>
-            <span className='singlePostDate'>Date: <b>Moni</b></span>
+            <span className='singlePostAuthor'>Author: 
+              <Link to={`/?user=${post.username}`} className="link">
+                <b>{post.username}</b>
+              </Link>
+            </span>
+            <span className='singlePostDate'>Date: {new Date(post.createdAt).toDateString()}</span>
         </div>
         <p className='singlePostDesc'>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        {post.desc}
         </p>
       </div>
     </div>
