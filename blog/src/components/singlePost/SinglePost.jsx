@@ -16,6 +16,8 @@ export default function SinglePost() {
     const getPost = async() => {
       const res = await axios.get('/posts/' + path)
       setPost(res.data)
+      setTitle(res.data.title);
+      setDesc(res.data.desc)
     }
     getPost()
   }, [path])
@@ -26,6 +28,15 @@ export default function SinglePost() {
       window.location.replace("/")
     } catch(err) {}
   }
+
+  const handleUpdate = async() => {
+    try {
+      await axios.put(`/posts/${post._id}`, 
+      {username: user.username, title, desc});
+      window.location.reload()
+    } catch(err) {}
+  }
+
   return (
     <div className='singlePost'>
       <div className="singlePostWrapper">
@@ -33,9 +44,15 @@ export default function SinglePost() {
         <img src={PF+post.photo} alt="" className="singlePostImg" />
         }
         {
-          updateMode ? <input type="text" value={post.title} /> : (
+          updateMode ? 
+          <input 
+            type="text" 
+            value={title} 
+            className="singlePostTitleInput" 
+            autoFocus
+            onChange={(e) => setTitle(e.target.value)}/> : (
         <h1 className="singlePostTitle">
-            {post.title}
+            {title}
             {post.username === user?.username && 
             (<div className="singlePostEdit">
                 <i class="singlePostIcon fa-regular fa-pen-to-square" onClick={() => setUpdateMode(true) }></i>
@@ -53,9 +70,14 @@ export default function SinglePost() {
             </span>
             <span className='singlePostDate'>Date: {new Date(post.createdAt).toDateString()}</span>
         </div>
-        <p className='singlePostDesc'>
+        {updateMode ? (
+        <textarea className='singlePostDescInput' value={desc} onChange={(e) => setDesc(e.target.value)}/>) : 
+        (
+        <p className='singlePostDesc'>  
         {post.desc}
         </p>
+        )}
+        {updateMode && <button className="singlePostButton" onClick={handleUpdate}>Update</button>}
       </div>
     </div>
   )
