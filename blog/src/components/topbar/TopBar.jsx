@@ -8,6 +8,7 @@ export default function TopBar() {
     const handleLogout = () => {
         dispatch({type: "LOGOUT"})
     }
+    const pf = "https://localhost:5000/images"
   return (
     <div className='top'>
         <div className='topLeft'>
